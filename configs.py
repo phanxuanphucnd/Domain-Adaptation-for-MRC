@@ -2,12 +2,13 @@
 # Copyright (c) 2022 by Phuc Phan
 
 root_path                     = '/home/phucpx/vinbdi/Domain-Adaptation-for-MRC'
-train_file                    = ['train-v1.1.json', 'BioASQ-train-factoid-7b-full-annotated.json']
-predict_file                  = f'BioASQ-test-factoid-7b-1.json'
+train_file                    = ['/BioASQ/train-v1.1.json', '/BioASQ/BioASQ-train-factoid-7b-full-annotated.json']
+predict_file                  = f'/BioASQ/BioASQ-test-factoid-7b-1.json'
 data_dir                      = root_path + '/data/'
 output_dir                    = root_path + '/output/'
 output_model_dir              = root_path + '/model/'
 golden_data_folder            = root_path + '/data/'
+domain_names                  = ['SQuAD', 'BioASQ']
 model_type                    = 'deberta-v3'
 original_model_name_or_path   = 'deberta-v3'
 pretrained_model_name_or_path = 'microsoft/deberta-v3-base'
@@ -46,7 +47,6 @@ USE_AUX_QA_LOSS               = True
 seed                          = 42
 do_train                      = True
 do_test                       = False
-domain_names                  = ['squad', 'mbbank']
 ALTERNATE_SOURCE_TARGET       = False
 SOURCE_INDEX                  = 0
 USE_AUX_QA_LOSS               = True
