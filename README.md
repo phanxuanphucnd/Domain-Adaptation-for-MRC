@@ -2,7 +2,7 @@
 
 
 - Training:
-```commandline
+```js
 >>> python make_data.py
 
 >>> python main.py
