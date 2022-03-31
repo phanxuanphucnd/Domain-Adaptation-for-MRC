@@ -18,11 +18,11 @@ class AdaptMRCModel(nn.Module):
         super(AdaptMRCModel, self).__init__()
 
         configs.model_type = configs.model_type.lower()
-        config = AutoConfig.from_pretrained(
+        config = DebertaV2Config.from_pretrained(
             configs.config_name if configs.config_name else configs.pretrained_model_name_or_path,
             cache_dir=configs.cache_dir if configs.cache_dir else None
         )
-        pretrained_model = AutoModelForQuestionAnswering.from_pretrained(
+        pretrained_model = DebertaV2ForQuestionAnswering.from_pretrained(
             configs.pretrained_model_name_or_path,
             from_tf=bool('.ckpt' in configs.pretrained_model_name_or_path),
             config=config,
