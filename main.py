@@ -232,8 +232,7 @@ def train(model, tokenizer):
                 global_step += 1
 
                 # Log metrics
-                if configs.local_rank in [-1,
-                                          0] and configs.logging_steps > 0 and global_step % configs.logging_steps == 0:
+                if configs.local_rank in [-1, 0] and configs.logging_steps > 0 and global_step % configs.logging_steps == 0:
                     # Only evaluate when single GPU otherwise metrics may not average well
                     if configs.local_rank == -1 and configs.evaluate_during_training:
                         results = evaluate(model, tokenizer, None, in_domain=None, out_domain=None, evaluate_all=False,
@@ -403,9 +402,16 @@ def main():
         # Take care of distributed/parallel training
         model_to_save = model.module if hasattr(model, 'module') else model
 
-        torch.save(model_to_save.state_dict(), f'{configs.output_model_dir}model.pt')
+        # TODO: Save model to
+        save_folder_dir = f'{configs.output_model_dir}/adapt-mrc-mbbank'
+        if os.path.exists(save_folder_dir):
+            os.makedirs(save_folder_dir)
+        model_to_save.pretrained_model.save_pretrained(save_folder_dir)
+        tokenizer.save_pretrained(save_folder_dir)
 
-        tokenizer.save_pretrained(configs.output_model_dir)
+        # torch.save(model_to_save.state_dict(), f'{configs.output_model_dir}model.pt')
+
+        # tokenizer.save_pretrained(configs.output_model_dir)
 
 
 if __name__ == "__main__":

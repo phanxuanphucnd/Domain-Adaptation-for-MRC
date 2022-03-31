@@ -22,18 +22,18 @@ class AdaptMRCModel(nn.Module):
             configs.config_name if configs.config_name else configs.pretrained_model_name_or_path,
             cache_dir=configs.cache_dir if configs.cache_dir else None
         )
-        pretrained_model = DebertaV2ForQuestionAnswering.from_pretrained(
+        self.pretrained_model = DebertaV2ForQuestionAnswering.from_pretrained(
             configs.pretrained_model_name_or_path,
             from_tf=bool('.ckpt' in configs.pretrained_model_name_or_path),
             config=config,
             cache_dir=configs.cache_dir if configs.cache_dir else None
         )
         self.encoder = Encoder(
-            pretrained_model,
+            self.pretrained_model,
             freeze_encoder=configs.freeze_encoder
         )
         self.factoid_qa_output_generator = QAOutLayer(
-            pretrained_model,
+            self.pretrained_model,
             freeze_qa_output_generator=configs.freeze_qa_output_generator
         )
         self.disc_aux_qa_layer = DiscQAOutLayer(
