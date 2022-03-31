@@ -150,7 +150,7 @@ def qa_collate(samples):
         }
     ]
 
-    if configs.model_type in {"xlm", "roberta", "distilbert", "camembert", "bart", "longformer"}:
+    if configs.model_type in {"deberta-v3"}:
         del question_context_features[0]['token_type_ids']
         del question_context_features[1]['token_type_ids']
         del question_context_features[2]['token_type_ids']

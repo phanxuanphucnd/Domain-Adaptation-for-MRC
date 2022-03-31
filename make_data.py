@@ -14,7 +14,7 @@ from transformers.trainer_utils import is_main_process
 from torch.utils.data.distributed import DistributedSampler
 from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
 from transformers import AutoTokenizer, squad_convert_examples_to_features
-from transformers.data.processors.squad import SquadResult, SquadV1Processor
+from transformers.data.processors.squad import SquadResult, SquadV1Processor, SquadV2Processor
 
 
 logger = logging.getLogger(__name__)
@@ -50,7 +50,7 @@ def load_and_cache_examples(domain_name, train_file, tokenizer, evaluate=False, 
     else:
         logger.info("Creating features from dataset file at %s", input_dir)
 
-        processor = SquadV1Processor()
+        processor = SquadV2Processor()
         examples = processor.get_dev_examples(configs.data_dir, filename=train_file)
 
         features, dataset = squad_convert_examples_to_features(

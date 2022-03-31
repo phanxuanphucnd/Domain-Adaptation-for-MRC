@@ -73,12 +73,13 @@ def train(model, tokenizer):
     configs.train_batch_size = configs.per_gpu_train_batch_size * max(1, configs.n_gpu)
 
     train_dataset = QADataset()
-    train_dataloader = torch.utils.data.DataLoader(train_dataset,
-                                                   batch_size=configs.train_batch_size,
-                                                   shuffle=False,
-                                                   num_workers=configs.num_workers,
-                                                   drop_last=False,
-                                                   collate_fn=qa_collate)
+    train_dataloader = torch.utils.data.DataLoader(
+        train_dataset,
+        batch_size=configs.train_batch_size,
+        shuffle=False,
+        num_workers=configs.num_workers,
+        collate_fn=qa_collate
+    )
 
     if configs.max_steps > 0:
         t_total = configs.max_steps
@@ -101,13 +102,16 @@ def train(model, tokenizer):
             "weight_decay": 0.0
         },
     ]
-    optimizer = AdamW(optimizer_grouped_parameters,
-                      lr=configs.learning_rate,
-                      eps=configs.adam_epsilon
-                      )
-    scheduler = get_linear_schedule_with_warmup(optimizer,
-                                                num_warmup_steps=configs.warmup_steps,
-                                                num_training_steps=t_total * configs.lr_multiplier)
+    optimizer = AdamW(
+        optimizer_grouped_parameters,
+        lr=configs.learning_rate,
+        eps=configs.adam_epsilon
+    )
+    scheduler = get_linear_schedule_with_warmup(
+        optimizer,
+        num_warmup_steps=configs.warmup_steps,
+        num_training_steps=t_total * configs.lr_multiplier
+    )
 
     # Check if saved optimizer or scheduler states exist
     if (os.path.isfile(os.path.join(configs.pretrained_model_name_or_path, "optimizer.pt"))
@@ -118,6 +122,7 @@ def train(model, tokenizer):
 
     if configs.fp16:
         try:
+
             from apex import amp
         except ImportError:
             raise ImportError("Please install apex from https://www.github.com/nvidia/apex to use fp16 training.")
@@ -183,6 +188,7 @@ def train(model, tokenizer):
         epoch_iterator = tqdm(train_dataloader, desc="Iteration", disable=configs.local_rank not in [-1, 0])
 
         local_step = 0
+        mean_loss = []
 
         for step, batch in enumerate(epoch_iterator):
             local_step += 1
@@ -212,6 +218,7 @@ def train(model, tokenizer):
                 loss.backward()
 
             tr_loss += loss.item()
+            mean_loss.append(loss)
 
             if (step + 1) % configs.gradient_accumulation_steps == 0:
                 if configs.fp16:
@@ -266,10 +273,12 @@ def train(model, tokenizer):
         if (ite % 10 == 0):
             if (configs.reverse_layer_lambda < 0.04):
                 configs.reverse_layer_lambda = configs.reverse_layer_lambda + configs.lambda_delta
+            print(f"ite: {ite} | global_step: {global_step} | loss: {type(mean_loss[0])}")
 
         if configs.max_steps > 0 and global_step > configs.max_steps:
             train_iterator.close()
             break
+
 
     if configs.local_rank in [-1, 0]:
         tb_writer.close()
