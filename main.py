@@ -256,7 +256,7 @@ def train(model, tokenizer):
                     torch.save(model_to_save.state_dict(), f'{output_dir}/model.pt')
                     tokenizer.save_pretrained(output_dir)
 
-                    torch.save(configs, os.path.join(output_dir, "training_configs.bin"))
+                    # torch.save(configs, os.path.join(output_dir, "training_configs.bin"))
                     logger.info("Saving model checkpoint to %s", output_dir)
 
                     torch.save(optimizer.state_dict(), os.path.join(output_dir, "optimizer.pt"))
@@ -272,7 +272,6 @@ def train(model, tokenizer):
         if (ite % 10 == 0):
             if (configs.reverse_layer_lambda < 0.04):
                 configs.reverse_layer_lambda = configs.reverse_layer_lambda + configs.lambda_delta
-            print(f"ite: {ite} | global_step: {global_step} | loss: {type(mean_loss[0])}")
 
         if configs.max_steps > 0 and global_step > configs.max_steps:
             train_iterator.close()
@@ -404,8 +403,10 @@ def main():
 
         # TODO: Save model to
         save_folder_dir = f'{configs.output_model_dir}/adapt-mrc-mbbank'
+        print(f"Save model to {save_folder_dir}")
         if os.path.exists(save_folder_dir):
             os.makedirs(save_folder_dir)
+
         model_to_save.pretrained_model.save_pretrained(save_folder_dir)
         tokenizer.save_pretrained(save_folder_dir)
 
